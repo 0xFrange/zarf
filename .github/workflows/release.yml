@@ -51,17 +51,19 @@ jobs:
 
         '
     - name: Auth with AWS
-      uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
+      uses: 
+        aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7
       with:
         role-to-assume: ${{ secrets.AWS_KMS_ROLE_ARN }}
-        role-session-name: ${{ github.job || github.event.client_payload.pull_request.head.sha
-          || github.sha }}
+        role-session-name: ${{ github.job || 
+          github.event.client_payload.pull_request.head.sha || github.sha }}
         aws-region: us-east-1
         role-duration-seconds: 3600
     - name: 'Zarf Agent: Sign the Image'
-      run: cosign sign --key awskms:///${{ secrets.COSIGN_AWS_KMS_KEY_ARN }} -a release-engineer=https://github.com/${{
-        github.actor }} -a version=$GITHUB_REF_NAME ghcr.io/zarf-dev/zarf/agent@$ZARF_AGENT_IMAGE_DIGEST
-        -y
+      run: cosign sign --key awskms:///${{ secrets.COSIGN_AWS_KMS_KEY_ARN }} -a 
+        release-engineer=https://github.com/${{ github.actor }} -a 
+        version=$GITHUB_REF_NAME 
+        ghcr.io/zarf-dev/zarf/agent@$ZARF_AGENT_IMAGE_DIGEST -y
       env:
         COSIGN_EXPERIMENTAL: 1
     - name: Build init-packages For Release
@@ -131,8 +133,8 @@ jobs:
         name: build-artifacts
         path: build/
     - name: Make zarf executable and skip brew latest for pre-release tags
-      run: "chmod +x build/zarf\nif [[ $GITHUB_REF_NAME == *\"rc\"* ]]; then\n  echo\
-        \ \"BREW_NAME=zarf@latest-rc\" >> $GITHUB_ENV\nelse\n  echo \"BREW_NAME=zarf\"\
+      run: "chmod +x build/zarf\nif [[ $GITHUB_REF_NAME == *\"rc\"* ]]; then\n  echo
+        \"BREW_NAME=zarf@latest-rc\" >> $GITHUB_ENV\nelse\n  echo \"BREW_NAME=zarf\"\
         \ >> $GITHUB_ENV\nfi\n"
     - name: Setup release ENV vars
       run: 'K8S_MODULES_VER=$(go list -f ''{{.Version}}'' -m k8s.io/client-go | sed
@@ -165,14 +167,16 @@ jobs:
         '
     - name: Get Brew tap repo token
       id: brew-tap-token
-      uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859
+      uses: 
+        actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859
       with:
         app-id: ${{ secrets.HOMEBREW_TAP_WORKFLOW_GITHUB_APP_ID }}
         private-key: ${{ secrets.HOMEBREW_TAP_WORKFLOW_GITHUB_APP_SECRET }}
         owner: defenseunicorns
         repositories: homebrew-tap
     - name: Run GoReleaser
-      uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29
+      uses: 
+        goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29
       with:
         distribution: goreleaser
         version: ~> v2
